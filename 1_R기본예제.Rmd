@@ -72,9 +72,154 @@ var6 <- seq(1, by = 3, length.out = 4)
 var6 
 ```
 
+## 수열 연산
 
+- 변수 + 변수
+- 변수 + 숫자
+
+```{r}
+# 변수 + 숫자 : 각 변수의 각 값에 2가 더해진 값이 출력
+var1 + 2
+
+# 변수 + 변수: 같은 순서에 위치한 값끼리 연산
+var1 + var2
+
+# 변수 + 변수 연산에서 데이터의 길이가 다를 경우
+# 경고 메시지가 출력되지만 결과값도 함께 출력됨
+
+var1 + var6
+# 1 3 5 7 9
+# 1 4 7 10
+```
+
+
+## 문자로 된 변수
+
+```{r}
+str1 <- "Hello World!"
+str1
+
+# 연속 문자 변수
+str2 <- c("Hello","World","is","good!")
+str2
 
 ```
+
+- 문자형 변수는 연산 불가능
+
+```{r}
+#str1 * 2
+
+```
+
+## 숫자를 다루는 함수
+
+```{r}
+x <- c(1,2,3)
+
+# 평균
+mean(x)
+
+# 최댓값
+max(x)
+
+# 최솟값
+min(x)
+
+```
+
+## 문자를 다루는 함수
+
+```{r}
+# paste() : 여러 문자를 합치는 함수
+paste("Hello", "World")
+paste(str2, collapse = ",") # 빈칸도 데이터다
+
+```
+
+## 패키지
+
+```{r}
+# ggplot2 패키지 설치
+#install.packages("ggplot2")
+
+# ggplot2 패키지 로드 
+library(ggplot2)
+```
+
+```{r}
+data <- c("a","a","b","c")
+
+# qplot() : Quick plot.
+# 빈도 막대 그래프 그리기
+
+qplot(data)
+
+?qplot
+```
+
+### MPG 데이터 실습
+- MPG(Mile Per Gallon) : 1999 ~ 2008년 미국에서 출시된 자동차 연비 데이터
+  - ggplot2에서 제공하는 예제 데이터
+  
+|||
+|:--|:--|
+|manufacturer|제조사|
+|model|자동차 모델명|
+|displ|배기량|
+|year|생산 연도|
+|cyl|실린더 개수|
+|trans|변속기 종류|
+|drv|구동 방식|
+|cty|도시 연비|
+|hwy|고속독로 연비|
+|fl|연료 종류|
+|class|자동차 종류|
+
+```{r}
+# data에 mpg, x축에 hwy 변수 지정하여 그래프 그리기
+qplot(data = mpg, x = hwy)
+```
+
+```{r}
+# x축에 cty
+qplot(data = mpg, x = cty)
+```
+
+```{r}
+# x축에 drv, y축에 hwy 산점도
+qplot(data = mpg, x = drv, y = hwy)
+qplot(data = mpg, x = drv, y = hwy, color = manufacturer)
+```
+
+```{r}
+# x축 drv, y축 hwy 선 그래프
+qplot(data = mpg, x =drv, y = hwy, geom = "line")
+```
+
+```{r}
+# x축 drv, y축 hwy 상자 수염 그림
+qplot(data = mpg, x =drv, y = hwy, geom = "boxplot")
+```
+
+```{r}
+# x축 drv, y축 hwy 상자 수염 그림, drv별 색 표현
+qplot(data = mpg, x =drv, y = hwy, geom = "boxplot", colour = drv)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 getwd()
 setwd("C:/Users/ITPS/Desktop/R_project")
 ```
