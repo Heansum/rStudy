@@ -1,0 +1,234 @@
+---
+title: "3.데이터프레임예제"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+## 데이터프레임 생성
+
+```{r}
+# 영어 점수 변수 생성
+english  <- c(90, 80, 60, 70)
+
+# 수학 점수 변수 생성
+math <- c(50, 60, 100, 20)
+
+# english, math 로 데이터프레임 생성해서 df_midterm에 할당
+# 일반적으로 데이터프레임 변수명은 df를 붙여서 구분
+df_midterm <- data.frame(english, math)
+df_midterm
+```
+
+```{r}
+class <- c(1, 1, 2, 2)
+df_midterm <- data.frame(english, math, class)
+df_midterm
+```
+
+```{r}
+# 변수를 미리 만들지 않고 데이터프레임을 생성
+df_midterm <- data.frame(english = c(90, 80, 60, 70), math = c(50, 60, 100, 20), class = c(1, 1, 2, 2))
+df_midterm
+```
+
+## 데이터프레임 분석
+
+```{r}
+# df_midterm의 english 평균
+mean(df_midterm$english)
+
+# df_midterm의 math 평균
+mean(df_midterm$math)
+```
+
+## 데이터를 파악하는 함수
+
+- head()
+  - 데이터 앞부분 출력
+- tail()
+  - 데이터 뒷부분 출력
+- View()
+  - 뷰어 창에서 데이터 확인
+  - 쥬피터에서는 지원 안함
+  - 대문자 V에 주의
+  
+- dim()
+  - 데이터 차원 출력
+  
+- str()
+  - 데이터 속성 출력
+  
+- summary()
+  - 요약통계량 출력
+
+```{r}
+# 외부데이터 불러오기
+exam <- read.csv("csv_exam.csv")
+
+# 앞에서 6행까지 출력
+head(exam)
+
+# 앞에서부터 2행까지 출력
+head(exam, 2)
+
+# 뒤에서부터 6행 출력
+tail(exam)
+```
+
+```{r}
+View(exam)
+```
+
+```{r}
+# 데이터의 차원(행, 열) 출력
+# dimensions(차원)의 앞글자
+dim(exam)
+```
+
+```{r}
+# 데이터 속성 확인
+str(exam)
+
+# data.frame : 데이터프레임
+# 20 obs(observation) : 20개의 관측치
+# 5 variables : 5개의 변수
+```
+
+```{r}
+# 요약통계량 출력
+summary(exam)
+```
+
+|출력값|통계량|설명|
+|:--|:--|:--|
+|Min|최솟값(Minimum)|가장 작은 값|
+|1st Qu|1사분위수(1st Quantile)|하위 25%(4분의1)지점에 위치하는 값|
+|Median|중앙값|중앙에 위치하는 값|
+|Mean|평균|모든 값을 더해 값의 개수로 나눈 값|
+|3rd Qu|3사분위수|하위 75%(4분의3)지점에 위치하는 값|
+|Max|최댓값|가장 큰 값|
+
+## ggplot2의 mpg 데이터를 이용한 실습
+
+```{r}
+# 데이터를 데이터프레임 형태로 불러오기
+# 더블콜론(::) : 패키지에 들어 있는 함수나 데이터 지정
+mpg <- as.data.frame(ggplot2::mpg)
+```
+
+```{r}
+head(mpg)
+
+tail(mpg)
+
+dim(mpg)
+
+str(mpg)
+
+summary(mpg)
+```
+
+## 데이터 수정
+
+- dplyr : 데이터 전처리에 사용하는 패키지
+
+```{r}
+# dplyr 설치
+#install.packages("dplyr")
+
+# dplyr 로드
+library(dplyr)
+```
+
+```{r}
+df_raw <- data.frame(var1 = c(1, 2, 1),
+                     var2 = c(2, 3, 2))
+df_raw
+```
+
+```{r}
+# 복사본 생성
+# 현업에서는 자료의 변화 과정을 남겨두는 것이 유용
+df_new <- df_raw
+df_new
+``` 
+
+### 변수명 바꾸기
+
+```{r}
+# rename(데이터, 새 변수명 = 기존 변수명)
+# 순서에 유의
+df_new <- rename(df_new, v2 = var2)
+df_new
+```
+
+### 파생변수 만들기
+
+- 파생변수(Derived Variable) : 기존의 변수들을 이용하여 새로운 변수를 만들어 낸 것.
+
+```{r}
+df <- data.frame(var1 = c(4, 3, 8),
+                 var2 = c(2, 6, 1))
+df
+```
+
+```{r}
+# var_sum 파생변수 생성
+df$var_sum <- df$var1 + df$var2
+df
+
+# var_mean 파생변수 생성
+df$var_mean <- (df$var1 +df$var2)/2
+df
+```
+
+## mpg데이터 수정 실습
+
+**분석 시나리오** <hr>
+*요구사항* : 도시 연비와 고속도로 연비 데이터는 있지만, 도로 유형을 통합한 연비를 알고 싶다.
+
+*분석계획* :
+1. 통합 연비 변수 생성(도시연비, 고속도로연비평균)<br>
+2. 통합 연비 평균 구하기<br>
+3. 통합 연비 요약 통계량 구하기
+
+```{r}
+# 1. 통합 연비 변수 생성
+mpg$total <- (mpg$cty + mpg$hwy)/2
+head(mpg, 2)
+```
+
+```{r}
+# 2. 통합 연비 평균 구하기
+mean(mpg$total)
+```
+
+```{r}
+# 3. 통합 연비 요약 통계량 구하기기 
+summary(mpg$total)
+```
+
+## 조건문으로 파생변수 생성
+**분석 시나리오** <br>
+*요구사항* : 전체 자동차 중 연비가 우수한 자동차에 '고연비 인증서'를 부여하려한다. 따라서, '고연비'의 기준을 구하고 P/F 여부를 구해주기를 요구함.
+
+- 히스토그램 : 숫자 자료를 동일한 폭의 계급으로 나누어 각 계급의 자료의 개수를 표현하는 그래프
+
+```{r}
+# 통합 연비 히스토그램 그리기
+hist(mpg$total)
+```
+
+```{r}
+# 고연비의 기준 : total 변수가 20이상이면 pass, 20미만이면 fail을 부여하기로 함.
+# ifelse() 조건문으로 파생변수 생성.
+# ifelse(조건, 참일때 값, 부정일때 값)
+mpg$test <- ifelse(mpg$total >= 20, "pass", "fail")
+head(mpg, 2)
+```
+ 
+```{r}
+# table() : 빈도표를 생성하는 함수
+# 연비 합격 빈도표 생성
+table(mpg$test)
+```
