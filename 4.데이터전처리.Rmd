@@ -1,0 +1,269 @@
+---
+title: "4.데이터전처리"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+|dplyr 함수|기능|
+|:--|:--|
+|filter()|행 추출|
+|select()|열 추출|
+|arrange()|정렬|
+|mutate()|변수 추가|
+|summarise()|통계치 산출|
+|group_by()|집단별로 나누기|
+|left_join()|데이터 합치기(열)|
+|bind_rows()|데이터 합치기(행)|
+
+## 조건에 맞는 데이터 추출
+
+```{r}
+#install.packages("dplyr")
+library(dplyr)
+```
+
+```{r}
+exam <- read.csv("csv_exam.csv")
+
+head(exam)
+```
+
+```{r}
+# class 가 1인 경우만 추출
+exam %>%
+  filter(class == 1)
+
+# %>% : 파이프 연산자(pipe operator). 함수들을 연결하는 기능
+
+# class 가 1이 아닌 경우만 추출
+exam %>%
+  filter(class != 1)
+
+# math 가 50을 초과한 경우만 추출
+exam %>%
+  filter(math > 50)
+
+# math 가 50 미만인 경우만 추출
+exam %>%
+  filter(math < 50)
+
+# english가 80이하인 경우만 추출
+exam %>%
+  filter(english <= 80)
+
+# english가 80이상인 경우만 추출
+exam %>%
+  filter(english >= 80)
+```
+
+## 여러 조건을 충족하는 행 추출
+
+```{r}
+# class 가 1이면서 math 가 50이상인 경우
+exam %>%
+  filter(class == 1 & math >= 50)
+
+# math 가 90이상이거나 english 가 90이상인 경우
+exam %>%
+  filter(math >= 90 | english >= 90)
+
+# class 가 1, 3, 5에 해당하면 추출
+exam %>%
+  filter(class == 1 | class == 3 | class == 5)
+
+# %in% 이용하기
+exam %>%
+  filter(class %in% c(1,3,5))
+
+# %in% : 매치 연산자(Matching Operator). 변수의 값이 지정한 목록에 해당하는지 확인
+head(exam)
+
+class1 <- exam %>%
+  filter(class == 1)
+class1
+
+# class 가 1인 행의 math 평균 구하기
+mean(class1$math)
+```
+
+## mpg 데이터 분석 연습
+
+*분석계획* : <br>
+1. 자동차 배기량에 따라 고속도로 연비가 다른지 알아보려고 함. displ(배기량)이 4 이하인 자동차와 5 이상인 자동차 중 어떤 자동차의 hwy(고속도로 연비)가 평균적으로 더 높은지 분석, <br>
+
+2. 자동차 제조사 별로 도시 연비가 다른지 알아보려고 함. audi와 toyota중 어느 manufacturer(자동차 제조사)의 cty(도시 연비)가 평균적으로 더 높은지 분석. <br>
+
+3. chevrolet, ford, honda 자동차의 고속도로 연비 평균을 알아보려고 함. 이 회사들의 데이터를 추출한 후 hwy 전체 평균을 분석.
+
+# my answer
+```{r}
+mpg <- as.data.frame(ggplot2::mpg)
+mpg
+car1 <- mpg %>% 
+  filter(displ <= 4)
+
+car2 <- mpg %>%
+  filter(displ >= 5)
+
+mean(car1$hwy)
+mean(car2$hwy)
+
+ifelse(mean(car1$hwy) >= mean(car2$hwy),
+  topCarHwy <-mean(car1$hwy),
+  topCarHwy)
+
+
+
+
+
+audi <- mpg %>%
+  filter(manufacturer == "audi")
+audi
+
+
+
+```
+
+#answer
+```{r}
+# 제조사가 audi인 데이터, toyota인 데이터 추출
+mpg3 <- mpg %>%
+  filter(manufacturer == "audi")
+mpg4 <- mpg %>%
+  filter(manufacturer == "toyota")
+
+# audi의 cty 평균
+mean(mpg3$cty)
+mean(mpg4$cty)
+```
+
+```{r}
+# chevrolet, ford, honda의 고속도로 연비 평균
+mpg5 <- mpg %>%
+  filter(manufacturer %in% c("chevrolet", "ford", "honda"))
+
+mean(mpg5$hwy)
+```
+
+## 필요한 변수만 추출하기
+
+```{r}
+# exam 데이터에서 math 추출
+exam %>% 
+  select(math)
+
+# 여러 변수 추출
+# class, math, english 변수 추출
+exam %>% 
+  select(class, math, english)
+```
+
+## 변수 제외하기
+
+```{r}
+# math, english 제외
+exam %>% 
+  select(-math, -english)
+```
+
+## dplyr 함수 조합
+
+```{r}
+# class 가 1인 행에서 english 추출
+exam %>% 
+  filter(class == 1) %>%
+  select(english)
+```
+
+## mpg 데이터 분석 연습
+*분석계획* : <br>
+1. mpg데이터에서 class(자동차 종류), cty(도시 연비) 변수만 추출해 새로운 데이터 생성. <br>
+2. 자동차 종류에 따라 도시 연비가 다른지 알아보려고 한다. class(자동차 종류)가 "suv"인 자동차와 "compact" 인 자동차 중 어떤 자동차의 cty(도시 연비) 평균이 더 높은지 분석.
+
+# answer
+```{r}
+# class, cty 변수 추출
+df <- mpg %>% select(class, cty)
+head(df)
+```
+
+```{r}
+df_suv <- df %>% filter(class == "suv")
+mean(df_suv$cty)
+
+# class가 compact 인 행 추출 후 평균 cty 분석
+df_compact <- df %>% filter(class == "compact")
+mean(df_compact$cty)
+
+```
+
+## 정렬
+
+```{r}
+# exam 데이터 math 오름차순 정렬
+exam %>%
+  arrange(math)
+
+# exam 데이터 math 내림차순 정렬
+exam %>% 
+  arrange(desc(math))
+
+# 정렬 기준 변수 여러 개 지정
+# class 및 math 오름차순 정렬
+exam %>% 
+  arrange(class, math)
+```
+
+## mpg 데이터 분석 연습
+*분석계획* : <br>
+1. "audi"에서 생산한 자동차 중에 어떤 자동차 모델의 hwy(고속도로연비)가 높은지 알아보려 한다. audi에서 생산한 자동차 중 hwy top5 를 출력.
+
+```{r}
+audiHwy <- audi %>% 
+  arrange(desc(hwy))
+
+head(audiHwy)
+
+```
+
+# answer
+
+```{r}
+mpg %>%
+  filter(manufacturer == "audi") %>% 
+  arrange(desc(hwy)) %>% 
+  head(5)
+```
+
+## 파생변수 추가
+
+```{r}
+# mutate() : 기존 데이터에 파생변수 추가
+# mutate(변수명 = 계산식)
+# 총합 변수 추가 
+exam %>% 
+  mutate(total = math + english + science) %>% 
+  head()
+  
+# 여러 파생변수 한 번에 추가하기
+exam %>% 
+  mutate(total = math + english + science, mean = (math + english + science )/3 ) %>% 
+  head()
+
+# mutate()에 ifelse() 적용하기
+exam %>% 
+  mutate(test = ifelse(science >= 60, "pass", "fail")) %>% 
+  head()
+
+# 추가한 변수를 바로 활용하기
+exam %>% 
+  mutate(total = math + english + science) %>% 
+  arrange(total) %>% 
+  head()
+```
+
+## mpg 데이터 분석 연습
+*분석계획*: <br>
+1. mpg 데이터에서 cty와 hwy를 합한 "합산 연비 변수"를 추가. <br>
+2. 앞서 만든 "합산 연비 변수"를 2로 나눠 "평균 연비 변수"를 추가. <br>
+3. "평균 연비 변수"가 가장 높은 자동차 3종의 데이터를 출력.
