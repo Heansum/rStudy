@@ -267,3 +267,252 @@ exam %>%
 1. mpg 데이터에서 cty와 hwy를 합한 "합산 연비 변수"를 추가. <br>
 2. 앞서 만든 "합산 연비 변수"를 2로 나눠 "평균 연비 변수"를 추가. <br>
 3. "평균 연비 변수"가 가장 높은 자동차 3종의 데이터를 출력.
+
+```{r}
+
+mpg <- as.data.frame(ggplot2::mpg)
+
+mpg <- mpg %>% mutate(total_cty_hwy = cty + hwy)
+mpg
+mpg %>% mutate(avg = total_cty_hwy/2)
+
+mpg %>% filter(class == "avg") %>% head(3)
+
+mpg %>%
+  filter(manufacturer == "audi") %>% 
+  arrange(desc(hwy)) %>% 
+  head(5)
+
+
+
+```
+
+```{r}
+# answer
+mpg <- as.data.frame(ggplot2::mpg)
+
+mpg %>% mutate(total = cty + hwy, mean = total/2) %>% arrange(desc(mean)) %>% head(3)
+```
+
+## 집단별로 요약하기
+```{r}
+# exam 데이터에서 math 평균 산출
+exam %>% summarise(mean_math = mean(math))
+
+# 집단별로 요약하기
+exam %>% group_by(class) %>% # class별로 분리
+  summarise(mean_math = mean(math))
+
+# 여러 요약 통계랑 한 번에 산출하기 
+exam %>% group_by(class) %>% # class 별로 분리
+  summarise(mean_math = mean(math), # math 평균
+            sum_math = sum(math), # math 합계
+            median_math = median(math), # math 중앙값
+            n = n()) # 학생 수 `
+```
+
+
+
+
+| 함수 | 의미 |
+| :-- | :-- |
+| mean() | 평균 |
+| sd() | 표준편차 |
+| sum() | 합계 |
+| median() | 중앙값 |
+| min() | 최솟값 |
+| max() | 최댓값 |
+| n() |빈도|
+
+```{r}
+# 각 집단별로 다시 집단 나누기
+mpg %>% group_by(manufacturer, drv) %>% summarise(mean_cty = mean(cty)) %>% head()
+```
+
+## mpg 데이터로 dplyr 조합 연습
+*회사별로 "suv"자동차의 도시 및 고속도로 통합 연비 평균을 구해 내림차순으로 정렬하고, 상위 5개 출력하기*<br>
+  1.회사별로 분리: group_by()<br>
+  2.suv 추출 : filter()<br>
+  3.통합 연비 변수 생성 : mutate()<br>
+  4.통합 연비 평균 산출 : summarise()<br>
+  5.내림차순 정렬 : arrange()<br>
+  6.상위 5개 출력 : head()
+  
+
+```{r}
+mpg
+mpg %>% group_by(manufacturer) %>% #회사별로 분리
+  filter(class == "suv") %>% # suv 추출
+  mutate(total = (cty + hwy)/2) %>% # 통합 연비 변수 생성
+  summarise(mean_total = mean(total)) %>% # 통합 연비 평균 산출
+  arrange(desc(mean_total)) %>% # 내림차순 정렬
+  head(5) # 상위 5개 출력
+
+```
+
+*분석계획* : <br>
+1. 어떤 차종의 도시 연비가 높은지 비교하려고함. class별 cty 평균 구한 뒤 내림차순으로 정렬<br>
+
+2. 어떤 회사 자동차의 hwy가 가장 높은지 알아보려고 함. hwy 평균이 가장 높은 회사 세 곳을 출력.<br>
+
+3. 어떤 회사에서 "compact" 차종을 가장 많이 생산하는지 알아보려고 함. 각 회사별 "compact" 차종 수를 내림차순으로 정렬.
+
+
+```{r}
+mpg
+mpg %>% group_by(class) %>% summarise(mean_cty = mean(cty)) %>% arrange(desc(mean_cty))
+
+mpg %>% group_by(manufacturer, hwy) %>% summarise(mean_hwy = mean(hwy)) %>% arrange(desc(mean_hwy)) %>% head(3) 
+
+mpg %>% group_by(manufacturer) %>% filter(class == "compact")
+
+
+```
+
+# answer
+```{r}
+mpg %>% group_by(class) %>% summarise(mean_cty = mean(cty)) %>% arrange(desc(mean_cty))
+
+mpg %>% group_by(manufacturer) %>% summarise(mean_hwy = mean(hwy)) %>% arrange(desc(mean_hwy)) %>% head(8)
+
+mpg %>% filter(class == "compact") %>% group_by(manufacturer) %>% summarise(count = n()) %>% arrange(desc(count))
+```
+
+## 데이터 합치기
+
+```{r}
+# 데이터 생성
+test1 <- data.frame(id = c(1, 2, 3, 4, 5), 
+                   midterm = c(60, 70, 80, 90, 85))
+
+test2 <- data.frame(id = c(1, 2, 3, 4, 5),
+                    final = c(70, 83, 65, 95, 80))
+
+test1
+test2
+```
+
+```{r}
+# id 기준으로 합쳐서 df_total 에 할당
+df_total <- left_join(test1, test2, by = "id")
+
+df_total
+
+```
+
+```{r}
+# 다른 데이터 활용해서 변수 추가하기
+df_name <- data.frame(class = c(1, 2, 3, 4, 5),
+                      teacher = c("kim", "lee", "park", "choi", "jung"))
+
+# class 기준으로 합치기
+exam_new <- left_join(exam, df_name, by = "class")
+exam_new
+
+```
+
+```{r}
+# 세로로 합치기
+group_a <- data.frame(id = c(1, 2, 3, 4, 5),
+                      test = c(60, 80, 70, 90, 85))
+
+group_b <- data.frame(id = c(6, 7, 8, 9, 10),
+                      test = c(70, 83, 65, 95, 80))
+
+# 데이터를 세로로 합쳐서 group_all에 할당
+group_all <- bind_rows(group_a, group_b)
+
+group_all
+
+```
+
+## mpg 데이터 분석 연습 
+*분석계획* : <br>
+1. fuel 데이터를 이용해서 mpg데이터에 price_fl(연료 가격) 변수를 추가.<br>
+2. model, fl, price_fl 변수를 추출해 앞부분 5개 행을 출력.
+
+
+```{r}
+fuel <- data.frame(fl = c("c", "d", "e", "p", "r"),
+                   price_fl = c(2.35, 2.38, 2.11, 2.76, 2.22),
+                   stringsAsFactors = F) # 문자를 factor 타입으로 변환하지 않도록 설정
+
+mpg
+
+left_join(mpg, fuel, by = "fl") %>% select(model, fl, price_fl) %>% head(5)
+```
+
+## midwest 데이터 분석 연습
+*분석계획*: <br>
+1. popadults(해당 지역 성인 인구), poptotal(전체 인구)를 이용하여 "전체 인구 대비 미성년 인구 비율" 변수를 추가,<br>
+
+2. 미성년 인구 비율이 가장 높은 상위 5개 county의 미성년 인구 비율을 출력. <br>
+
+3. 아래 기준에 따라 미성년 비율 등급 변수를 추가하고, 각 등급에 몇 개의 지역이 있는지 파악.<br>
+
+- large : 40% 이상
+- middle : 30 ~ 40% 
+- small : 30% 미만
+
+4. popasian(해당 지역의 아시아인 인구)를 활용하여 "전체 인구 대비 아시아인 인구 비율" 변수를 추가하고 하위 10개 지역의 state, county, 아시아인 인구 비율을 출력.
+
+```{r}
+midwest <- as.data.frame(ggplot2::midwest)
+# 1.
+midwest
+midwest_new <- midwest %>% mutate(popyouthrate = (poptotal-popadults)/poptotal * 100)
+
+# 2.
+midwest_new
+midwest_new %>% arrange(desc(popyouthrate)) %>% head(5)
+
+midwest_new %>% arrange(desc(popyouthrate)) %>% select(county, popyouthrate) %>% head(5)
+
+#3.
+midwest_new <- midwest_new %>% mutate(grade = ifelse(popyouthrate >= 40 ,"large", ifelse(popyouthrate >= 30, "middle", "small")))
+
+table(midwest_new$grade)
+
+
+# n()를 이용해서도 파악가능
+midwest_new %>% group_by(grade) %>% summarise(n = n())
+
+#4
+
+midwest_new %>% mutate(ratepopasian = (popasian / poptotal) * 100) %>% arrange(ratepopasian) %>% select(state, county, ratepopasian) %>% head(10)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

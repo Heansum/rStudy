@@ -1,0 +1,139 @@
+---
+title: "5.데이터정제"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+## 결측치 찾기
+
+- 결측치의 의의
+  - 누락된 값, 비어있는 값, 즉 공란을 말한다
+  - 결측치가 있으면 함수가 적용되지 않거나 분석 결과가 왜곡되는 결과가 발생
+  - 결측치를 제거 한 후 분석 실시
+  - 표기법 : 대문자 NA(따옴표 없음)
+    - Not Available
+    
+```{r}
+df <- data.frame(sex = c("M", "F", NA, "M", "F"), score = c(5, 4, 3, 4, NA))
+
+df
+```
+
+```{r}
+# 결측치 확인
+is.na(df)
+
+```
+
+```{r}
+# 결측치 빈도 출력
+table(is.na(df))
+
+# 각 변수별로 결측치 확인
+table(is.na(df$sex))
+
+table(is.na(df$score))
+```
+
+```{r}
+# 결측치가 포함된 상태로 분석
+mean(df$score)
+
+sum(df$score)
+```
+
+## 결측치 제거하기
+
+```{r}
+# dplyr 패키지 로드
+library(dplyr)
+```
+
+```{r}
+# score가 NA인 데이터만 출력
+df %>% filter(is.na(score))
+
+# score가 결측치가 아닌 데이터만 출력
+# ! : 부정(not)
+df %>% filter(!is.na(score))
+
+```
+
+```{r}
+# 결측치 제외한 데이터로 분석하기
+df_nomiss <- df %>% filter(!is.na(score))
+
+mean(df_nomiss$score)
+
+sum(df_nomiss$score)
+
+```
+
+```{r}
+# 여러 변수에 동시에 결측치가 없는 데이터 출력하기
+# score, sex 결측치 제외
+df_nomiss <- df %>% filter(!is.na(score) & !is.na(sex))
+
+df_nomiss
+```
+
+```{r}
+# 결측치가 하나라도 있으면 제거
+# 모든 변수에 결측치가 없는 데이터 추출
+# 현업에서는 분석에 사용 가능한 행까지 지나치게 제거될 가능성이 있어서 비추천
+df_nomiss2 <- na.omit(df)
+df_nomiss2
+
+
+```
+
+## 함수의 결측치 제외 기능
+
+```{r}
+# 결측치를 제외한 평균
+mean(df$score, na.rm = T)
+
+sum(df$score, na.rm = T)
+
+?mean
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
