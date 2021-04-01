@@ -113,9 +113,6 @@ ifelse(mean(car1$hwy) >= mean(car2$hwy),
   topCarHwy)
 
 
-
-
-
 audi <- mpg %>%
   filter(manufacturer == "audi")
 audi
