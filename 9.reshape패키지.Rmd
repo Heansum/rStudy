@@ -1,0 +1,63 @@
+---
+title: "9.reshape패키지"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+# reshape
+
+- melt()
+  - 원데이터 형태로 만드는 함수
+  - 변수를 데이터로 바꿈
+  - 일반적으로 모델링에 적합
+  - melt(data, id = ...)
+  
+- cast()
+  - 요약 형태로 만드는 함수
+  - 데이터를 변수로 바꿈
+  - 일반적으로 그래프 시각화에 적합
+  - cast(data, formula = ...~ variable, fun)
+
+<img src = "./reshape.png">
+
+```{r}
+head(airquality)
+```
+
+- airquality 데이터 : 153일 동안의 공기 질 측정 데이터 
+
+*변수*
+- Ozone : 평균 오존량
+- Solar.R : 태양 복사
+- wind : 평균 풍속
+- Temp : 최대 온도
+- Month : 월
+- Day : 일
+
+```{r}
+install.packages("reshape")
+library(reshape)
+```
+
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

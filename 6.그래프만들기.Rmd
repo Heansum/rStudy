@@ -136,6 +136,111 @@ ggplot(data = mpg, aes(x = hwy)) + geom_bar()
 
 2. 자동차 종류별 빈도 막대 그래프를 그리기 
 
+```{r}
+library(dplyr)
+library(ggplot2)
+# 평균표 생성
+df_mpg <- mpg %>%
+  filter(class == "suv") %>%
+  group_by(manufacturer) %>%
+  summarise(mean_cty = mean(cty)) %>% 
+  arrange(desc(mean_cty)) %>% 
+  head(5)
+
+df_mpg
+
+# 그래프 그리기
+ggplot(data = df_mpg, aes(x = reorder(manufacturer, -mean_cty), y = mean_cty)) + geom_col()
+
+```
+
+```{r}
+ggplot(data = mpg, aes(x = class)) + geom_bar()
+```
+
+## 선 그래프
+
+- 선 그래프(Line Chart)
+  - 데이터를 선으로 표현한 그래프
+  
+- 시계열 그래프(Time Series Chart)
+  - 일정 시간 간격을 두고 나열된 시계열 데이터(Time Series Data)를 선으로 표현한 그래프
+  
+  - 환율, 주가지수 등 경제 지표가 시간에 따라 어떻게 변하는지 표현할 때 사용
+  
+```{r}
+# economics 데이터 : 미국의 경제 지표들을 월별로 나타낸 데이터
+# x축에는 시간, y 축에는 실업자 수를 지정
+ggplot(data = economics, aes(x = date, y = unemploy)) + geom_line()
+
+head(economics)
+```
+
+### 그래프 그리기 연습
+1. 시간에 따른 psavert(개인 저축률) 변화를 나타내는 그래프 그리기
+
+```{r}
+ggplot(data = economics, aes(x = date, y = psavert)) + geom_line()
+```
+
+## 상자 그림
+- 상자 그림(Box Plot)
+  - 데이터의 분포(퍼져 있는 형태)를 직사각형 상자 모양으로 표현한 그래프
+  
+- 분포를 알 수 있기 때문에 평균만 볼때보다 데이터의 특성을 좀 더 자세히 이해할 수 있음
+
+```{r}
+#mpg 데이터의 drv(구동 방식)별 hwy(고속도로 연비)를 상자 그림으로 표현
+ggplot(data = mpg, aes(x = drv, y = hwy)) + geom_boxplot()
+```
+
+### 그래프 그리기 연습
+1. 자동차 종류가 "compact", "subcompact", "suv"인 자동차의 cty(도시 연비)를 비교하는 상자 그림 그리기
+
+```{r}
+class_mpg <- mpg %>% filter(class %in% c("compact", "subcompact", "suv"))
+
+ggplot(data = class_mpg, aes(x = class, y = cty )) + geom_boxplot()
+```
+
+# 정리
+
+- ggplot2 함수들 
+  - geom_point()
+    - 산점도
+  
+  - geom_col()
+    - 막대 그래프 - 요약표
+    
+  - geom_bar()
+    - 막대 그래프 - 원자료(low data)
+    
+  - geom_line()
+    - 선 그래프
+    
+  - geom_boxplot()
+    - 상자그림
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+
+
+
+
+
+
+
 
 
 
