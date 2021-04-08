@@ -1,0 +1,119 @@
+---
+title: "10. 선형회귀분석"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+# 회귀분석
+
+- 변수 x가 변수 y에 주는 영향을 알기 위한 분석 방법.
+
+- 특정 변수를 예측하거나 추론하기 위한 분석 방법.
+
+- 독립변수의 개수가 하나이면 단순회귀분석, 독립변수의 개수가 두 개 이상이면 다중선형회귀분석
+
+## 선형회귀분석
+- 종속변수와 독립변수와의 선형 상관 관계를 모델링하는 회귀분석 기법
+
+### 단순선형회귀
+
+```{r}
+# install.packages("UsingR")
+library(UsingR)
+library(ggplot2)
+```
+
+```{r}
+# galton : 928개의 부모의 키와 아이의 키에 대한 데이터터
+str(galton)
+```
+
+```{r}
+# 데이터의 분포를 확인
+# par() : 그래프의 모양을 다양하게 조절하는 함수
+# mfrow : 한 화면에 여러 그래프를 비교하기 위해해
+par(mfrow = c(1, 2))
+hist(galton$child, col = "blue", breaks = 100)
+
+hist(galton$parent, col = "blue", breaks = 100)
+
+par(mfrow = c(1, 1))
+```
+
+```{r}
+# lm(종속변수 ~ 독립변수, 데이터)
+lm_gal <- lm(child ~ parent, data = galton)
+
+summary(lm_gal)
+# 회귀식 : 23.94153 + 0.64629*parent
+# Estimate 끼리 곱한다
+```
+
+```{r}
+# 그래프로 그려보기
+plot(child~parent, data = galton)
+abline(lm_gal, col = "red")
+```
+
+### 단순선형회귀 연습
+- women 데이터 : 30 ~ 39세의 미국 여성 15명의 키와 몸무게 데이터, 단위는 인치, 파운드로 되어있음
+
+- 분석목표 : women 데이터에서 키로 몸무게를 예측하는 회귀모델 훈련
+
+```{r}
+head(women)
+lm_women <- lm(weight~height, data = women)
+summary(lm_women)
+
+plot(weight~height, data = women)
+abline(lm_women, col = "red")
+```
+
+### 다중선형회귀
+
+```{r}
+#install.packages("MASS")
+library(MASS)
+```
+
+```{r}
+head(Cars93)
+
+lm(Price ~ EngineSize + RPM + Weight, data = Cars93)
+
+summary(lm(Price ~ EngineSize + RPM + Weight, data = Cars93))
+# 회귀식 : Price = -51.793292 + 4.305387*EngineSize + 0.007096*RPM + 0.007271*Weight
+
+# F-statistic : 도출된 회귀식이 회귀분석 모델 전체에 통계적으로 의미가 있는지 파악
+
+# 데이터개수(DF) : 3 + 89 + 1
+
+# P-value : 각 변수가 종속변수에 미치는 영향이 유의한지 파악, 0.05미만에서 유의미하다
+
+# Adjusted R-squared(수정 결정계수) : 회귀선이 종속변수의 몇 %를 설명할 수 있는지 확인
+
+# 현재 p-value값이 0.05미만이기 때문에 추청된 회귀 모형이 통계적으로 매우 유의하다.
+
+# 수정 결정계수는 0.5467로 다소낮아, 이 회귀식이 데이터를 적절하게 설명하고 있지는 않다.
+
+# 결정계수가 낮아 데이터의 설명력은 낮지만 회귀식과 회귀계수들이 유의미하여 엔진크기와 RPM 그리고 무게로 자동차의 가격을 추정할 수 있다.
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

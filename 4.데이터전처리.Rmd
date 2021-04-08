@@ -18,8 +18,9 @@ editor_options:
 ## 조건에 맞는 데이터 추출
 
 ```{r}
-#install.packages("dplyr")
+install.packages("dplyr")
 library(dplyr)
+
 ```
 
 ```{r}

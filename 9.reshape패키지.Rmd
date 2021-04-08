@@ -35,13 +35,40 @@ head(airquality)
 - Day : 일
 
 ```{r}
-install.packages("reshape")
+#install.packages("reshape")
 library(reshape)
 ```
 
-  
-  
+```{r}
+# melt 함수
+apm <- melt(airquality, id = c("Month", "Day"), na.rm = T)
 
+head(apm)
+```
+
+```{r}
+# cast 함수
+#              세로 가로 값
+head(cast(apm, Day~Month~variable))
+tail(cast(apm, Day~Month~variable))
+
+```
+
+```{r}
+head(cast(apm, Month+Day~variable))
+
+head(cast(apm, Month+variable~Day))
+
+head(cast(apm, Month~variable+Day))
+```
+
+```{r}
+head(cast(apm, Month~variable, mean))
+
+head(cast(apm, Day~variable, mean))
+
+head(cast(apm, Month~Day, mean))
+```
 
 
 
